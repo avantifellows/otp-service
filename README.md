@@ -1,6 +1,6 @@
 # Avanti Fellows OTP Service
 
-This repository contains code for sending, re-sending and verifying OTP sent to mobile numbers.
+This repository contains code for sending and verifying OTP sent to mobile numbers.
 
 ## Usage
 The service is exposed in the form of two endpoints
