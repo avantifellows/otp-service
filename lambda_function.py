@@ -2,74 +2,53 @@ import json
 import requests
 
 def lambda_handler(event, context):
-    
-    headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json", "apikey": "f7691a013e6c4532c5ba2ceaf35eea8c"}
-    otp_auth_key = "8c28c30eeeafb174daba3635a003d68c"
 
+    # Base URL of Gupshup's OTP API, including all constant params
+    baseURL = "https://enterprise.smsgupshup.com/GatewayAPI/rest?userid=2000173120&password=Avanti@12345&method=TWO_FACTOR_AUTH&v=1.1&msg=%25code%25%20is%20your%20OTP%20from%20Avanti%20Fellows&format=text&otpCodeLength=4&otpCodeType=NUMERIC";
+
+    response_headers={"Access-Control-Allow-Origin" : "*"}
+
+    # Check for query params, otherwise return 404 (Parameters not found)
     if(event['queryStringParameters']):
-        if('phone' not in event['queryStringParameters']):
+        queryParams = event['queryStringParameters']
+
+        # Check for 'phone' param, otherwise return 404 (Phone number not found)
+        if('phone' not in queryParams):
             return {
+            'headers': response_headers,
             'statusCode': 404,
             'body': json.dumps("Phone number not found")
             }
-        phone_number = event['queryStringParameters']['phone']
-        
+
+        phone_number = queryParams['phone']
+
+        # Request for OTP, along with the phone number
         if(str(event['path']) == '/sendotp'):
-            data = {"key":otp_auth_key, "phone":phone_number}
-            response = requests.post("https://api.gupshup.io/sm/api/ent/sms/2fa/sendOTP", headers=headers, data=data)
-            if(response.json()['code'] == "100"):
-                return {
-                'statusCode': 200,
-                'body': "Success. New code generated and code was sent the user."
-                }
-            else:
-                return {
-                'statusCode': 500,
-                'body': "Internal server error."
-                }
-        elif(str(event['path']) == '/updateotp'):
-            data = {"key":otp_auth_key, "message":"Resent OTP %code%"}
-            response = requests.post("https://api.gupshup.io/sm/api/ent/sms/2fa/updateMessage", headers=headers, data=data)
-            if(response.json()['code'] == "200"):
-                return {
-                'statusCode': 200,
-                'body': "Success. Code resent to the user."
-                }
-            else:
-                return {
-                'statusCode': 500,
-                'body': "Internal server error."
-                }
+            data = {"phone_no":phone_number}
+            response = requests.post(baseURL, params=data)
+
+        # Send OTP code for verification, along with phone number
         elif(str(event['path']) == '/verifyotp'):
-            if('code' not in event['queryStringParameters']):
+
+            # Check for 'code' in params, otherwise return 404 (OTP code not found)
+            if('code' not in queryParams):
                 return {
+                    'headers': response_headers,
                     'statusCode': 404,
                     'body': json.dumps("OTP code not found")
                 }
-            code = event['queryStringParameters']['code']
-            data = {"key":otp_auth_key, "phone":phone, "code":code}
-            response = requests.post("https://api.gupshup.io/sm/api/ent/sms/2fa/verifyOTP", headers=headers, data=data)
-            if(response.json()['code'] == "200"):
-                return {
-                'statusCode': 200,
-                'body': "Success. User verified."
-                }
-            elif(response.json()['code'] == "903"):
-                return {
-                'statusCode': 401,
-                'body': "Invalid code."
-                }
-            elif(response.json()['code'] == "907"):
-                return {
-                'statusCode': 401,
-                'body': "Code is expired."
-                }
-            else:
-                return {
-                'statusCode': 500,
-                'body': "Internal server error."
-                }
+            code = queryParams['code']
+            data = {"otp_code":int(code), "phone_no":phone_number}
+            response = requests.post(baseURL, data=data)
+
+        return {
+            'headers': response_headers,
+            'statusCode': response.status_code,
+            'body': response.content
+        }
+
     return {
             'statusCode': 404,
+            'headers': response_headers,
             'body': json.dumps("Parameters not found")
             }
