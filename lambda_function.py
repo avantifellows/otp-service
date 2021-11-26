@@ -3,6 +3,7 @@ import requests
 import os
 import urllib.parse
 
+
 def lambda_handler(event, context):
     # Base URL of Gupshup's OTP API, including all constant params
     baseURL = os.environ.get("OTP_API_BASE_URL")
@@ -28,7 +29,11 @@ def lambda_handler(event, context):
         }
 
     phone_number = queryParams["phone"]
-    msg, otpCodeLength, otpCodeType = urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG")), os.environ.get("DEFAULT_OTP_CODE_LENGTH"), os.environ.get("DEFAULT_OTP_CODE_TYPE")
+    msg, otpCodeLength, otpCodeType = (
+        urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG")),
+        os.environ.get("DEFAULT_OTP_CODE_LENGTH"),
+        os.environ.get("DEFAULT_OTP_CODE_TYPE"),
+    )
 
     if "msg" in queryParams:
         msg = urllib.parse.quote(queryParams["msg"])
@@ -39,7 +44,15 @@ def lambda_handler(event, context):
 
     # Request for OTP, along with the phone number
     if eventPath == "/sendotp":
-        response = requests.post(baseURL, params={"phone_no": phone_number, "msg": msg, "otpCodeLength": otpCodeLength,"otpCodeType": otpCodeType })
+        response = requests.post(
+            baseURL,
+            params={
+                "phone_no": phone_number,
+                "msg": msg,
+                "otpCodeLength": otpCodeLength,
+                "otpCodeType": otpCodeType,
+            },
+        )
 
         # Send OTP code for verification, along with phone number
     elif eventPath == "/verifyotp":
@@ -54,7 +67,13 @@ def lambda_handler(event, context):
 
         response = requests.post(
             baseURL,
-            params={"otp_code": int(queryParams["code"]), "phone_no": phone_number, "msg": msg, "otpCodeLength": otpCodeLength,"otpCodeType": otpCodeType },
+            params={
+                "otp_code": int(queryParams["code"]),
+                "phone_no": phone_number,
+                "msg": msg,
+                "otpCodeLength": otpCodeLength,
+                "otpCodeType": otpCodeType,
+            },
         )
 
     return {
