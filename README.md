@@ -12,6 +12,8 @@ https://ym6gqg7jui.execute-api.ap-south-1.amazonaws.com/dev/sendotp
 ```
 Required query parameters: `phone`
 
+Optional query parameters: `msg`, `otpCodeLength`, `optCodeType`
+
 #### Example
 ```py
 import requests
@@ -29,6 +31,8 @@ https://ym6gqg7jui.execute-api.ap-south-1.amazonaws.com/dev/verifyotp
 ```
 Required query parameters: `phone`, `code`
 
+Optional query parameters: `msg`, `otpCodeLength`, `optCodeType`
+
 #### Example
 ```py
 import requests
@@ -39,3 +43,13 @@ params = {
 }
 response = requests.post(url, params = params)
 ```
+
+### Query Parameters
+`phone` : The number must be in pure numeric format with no special characters
+`msg` : The message that needs to be sent. It can contain alphanumeric & special characters. The message must contain %code%.
+Default is "%code% is your OTP from Avanti Fellows."
+`otpCodeLength` : This is the length of OTP. It must be a positive integer less than or equals to 10.
+Default is 4.
+`otpCodeType` : This parameter specifies a type of OTP. 3 values are permitted NUMERIC(only numbers), ALPHABETIC(only alphabets), ALPHANUMERIC(mix of numbers and alphabets)
+Default is NUMERIC.
+`code`  : The OTP code that needs to be verified.

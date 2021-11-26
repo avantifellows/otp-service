@@ -1,17 +1,16 @@
 import json
 import requests
 import os
-
+import urllib.parse
 
 def lambda_handler(event, context):
     # Base URL of Gupshup's OTP API, including all constant params
     baseURL = os.environ.get("OTP_API_BASE_URL")
-
     response_headers = {"Access-Control-Allow-Origin": "*"}
+    eventPath = str(event["path"])
 
     # Check for query params, otherwise return 404 (Parameters not found)
     if not event["queryStringParameters"]:
-
         return {
             "statusCode": 404,
             "headers": response_headers,
@@ -19,10 +18,9 @@ def lambda_handler(event, context):
         }
 
     queryParams = event["queryStringParameters"]
-    eventPath = str(event["path"])
+
     # Check for 'phone' param, otherwise return 404 (Phone number not found)
     if "phone" not in queryParams:
-
         return {
             "headers": response_headers,
             "statusCode": 404,
@@ -30,10 +28,18 @@ def lambda_handler(event, context):
         }
 
     phone_number = queryParams["phone"]
+    msg, otpCodeLength, otpCodeType = urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG")), os.environ.get("DEFAULT_OTP_CODE_LENGTH"), os.environ.get("DEFAULT_OTP_CODE_TYPE")
+
+    if "msg" in queryParams:
+        msg = urllib.parse.quote(queryParams["msg"])
+    if "otpCodeLength" in queryParams:
+        otpCodeLength = queryParams["otpCodeLength"]
+    if "otpCodeType" in queryParams:
+        otpCodeType = queryParams["otpCodeType"]
 
     # Request for OTP, along with the phone number
     if eventPath == "/sendotp":
-        response = requests.post(baseURL, params={"phone_no": phone_number})
+        response = requests.post(baseURL, params={"phone_no": phone_number, "msg": msg, "otpCodeLength": otpCodeLength,"otpCodeType": otpCodeType })
 
         # Send OTP code for verification, along with phone number
     elif eventPath == "/verifyotp":
@@ -48,7 +54,7 @@ def lambda_handler(event, context):
 
         response = requests.post(
             baseURL,
-            data={"otp_code": int(queryParams["code"]), "phone_no": phone_number},
+            params={"otp_code": int(queryParams["code"]), "phone_no": phone_number, "msg": msg, "otpCodeLength": otpCodeLength,"otpCodeType": otpCodeType },
         )
 
     return {
