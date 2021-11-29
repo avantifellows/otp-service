@@ -29,18 +29,23 @@ def lambda_handler(event, context):
         }
 
     phone_number = queryParams["phone"]
-    msg, otpCodeLength, otpCodeType = (
-        urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG")),
-        os.environ.get("DEFAULT_OTP_CODE_LENGTH"),
-        os.environ.get("DEFAULT_OTP_CODE_TYPE"),
-    )
 
-    if "msg" in queryParams:
-        msg = urllib.parse.quote(queryParams["msg"])
-    if "otpCodeLength" in queryParams:
-        otpCodeLength = queryParams["otpCodeLength"]
-    if "otpCodeType" in queryParams:
-        otpCodeType = queryParams["otpCodeType"]
+    # Use default values if params aren't provided
+    msg = (
+        urllib.parse.quote(queryParams["msg"])
+        if "msg" in queryParams
+        else urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG"))
+    )
+    otpCodeLength = (
+        queryParams["otpCodeLength"]
+        if "otpCodeLength" in queryParams
+        else os.environ.get("DEFAULT_OTP_CODE_LENGTH")
+    )
+    otpCodeType = (
+        queryParams["otpCodeType"]
+        if "otpCodeType" in queryParams
+        else os.environ.get("DEFAULT_OTP_CODE_TYPE")
+    )
 
     # Request for OTP, along with the phone number
     if eventPath == "/sendotp":
