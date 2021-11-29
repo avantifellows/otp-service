@@ -47,13 +47,13 @@ response = requests.post(url, params = params)
 ### Query Parameters
 `phone` : The number must be in pure numeric format with no special characters. <br/>
 
-`msg` : The message that needs to be sent. It can contain alphanumeric & special characters. The message must contain %code%.
-Default is "%code% is your OTP from Avanti Fellows." <br/>
+`msg` : The message that needs to be sent. It can contain alphanumeric & special characters. The message must contain `%code%`.
+Default is `"%code% is your OTP from Avanti Fellows."` <br/>
 
 `otpCodeLength` : This is the length of OTP. It must be a positive integer less than or equals to 10.
 Default is 4. <br/>
 
-`otpCodeType` : This parameter specifies a type of OTP. 3 values are permitted NUMERIC(only numbers), ALPHABETIC(only alphabets), ALPHANUMERIC(mix of numbers and alphabets)
+`otpCodeType` : This parameter specifies a type of OTP. 3 values are permitted NUMERIC (only numbers), ALPHABETIC (only alphabets), ALPHANUMERIC (mix of numbers and alphabets).
 Default is NUMERIC. <br/>
 
 `code`  : The OTP code that needs to be verified.
