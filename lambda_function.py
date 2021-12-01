@@ -1,14 +1,14 @@
 import json
 import requests
 import os
-import urllib.parse
 
 
 def lambda_handler(event, context):
     # Base URL of Gupshup's OTP API, including all constant params
-    baseURL = os.environ.get("OTP_API_BASE_URL")
+    base_URL = os.environ.get("OTP_API_BASE_URL")
+
     response_headers = {"Access-Control-Allow-Origin": "*"}
-    eventPath = str(event["path"])
+    event_path = str(event["path"])
 
     # Check for query params, otherwise return 404 (Parameters not found)
     if not event["queryStringParameters"]:
@@ -18,52 +18,52 @@ def lambda_handler(event, context):
             "body": json.dumps("Parameters not found"),
         }
 
-    queryParams = event["queryStringParameters"]
+    query_params = event["queryStringParameters"]
 
     # Check for 'phone' param, otherwise return 404 (Phone number not found)
-    if "phone" not in queryParams:
+    if "phone" not in query_params:
         return {
             "headers": response_headers,
             "statusCode": 404,
             "body": json.dumps("Phone number not found"),
         }
 
-    phone_number = queryParams["phone"]
+    phone_number = query_params["phone"]
 
     # Use default values if params aren't provided
     msg = (
-        urllib.parse.quote(queryParams["msg"])
-        if "msg" in queryParams
-        else urllib.parse.quote(os.environ.get("DEFAULT_OTP_MSG"))
+        query_params["msg"]
+        if "msg" in query_params
+        else os.environ.get("DEFAULT_OTP_MSG")
     )
-    otpCodeLength = (
-        queryParams["otpCodeLength"]
-        if "otpCodeLength" in queryParams
+    otp_code_length = (
+        query_params["otpCodeLength"]
+        if "otpCodeLength" in query_params
         else os.environ.get("DEFAULT_OTP_CODE_LENGTH")
     )
-    otpCodeType = (
-        queryParams["otpCodeType"]
-        if "otpCodeType" in queryParams
+    otp_code_type = (
+        query_params["otpCodeType"]
+        if "otpCodeType" in query_params
         else os.environ.get("DEFAULT_OTP_CODE_TYPE")
     )
 
-    # Request for OTP, along with the phone number
-    if eventPath == "/sendotp":
+    # Request for OTP
+    if event_path == "/sendotp":
         response = requests.post(
-            baseURL,
+            base_URL,
             params={
                 "phone_no": phone_number,
                 "msg": msg,
-                "otpCodeLength": otpCodeLength,
-                "otpCodeType": otpCodeType,
+                "otpCodeLength": otp_code_length,
+                "otpCodeType": otp_code_type,
             },
         )
 
-        # Send OTP code for verification, along with phone number
-    elif eventPath == "/verifyotp":
+    # Verify OTP
+    elif event_path == "/verifyotp":
 
         # Check for 'code' in params, otherwise return 404 (OTP code not found)
-        if "code" not in queryParams:
+        if "code" not in query_params:
             return {
                 "headers": response_headers,
                 "statusCode": 404,
@@ -71,13 +71,13 @@ def lambda_handler(event, context):
             }
 
         response = requests.post(
-            baseURL,
+            base_URL,
             params={
-                "otp_code": int(queryParams["code"]),
+                "otp_code": int(query_params["code"]),
                 "phone_no": phone_number,
                 "msg": msg,
-                "otpCodeLength": otpCodeLength,
-                "otpCodeType": otpCodeType,
+                "otpCodeLength": otp_code_length,
+                "otpCodeType": otp_code_type,
             },
         )
 
