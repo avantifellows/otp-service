@@ -9,7 +9,7 @@ def lambda_handler(event, context):
 
     response_headers = {"Access-Control-Allow-Origin": "*"}
     event_path = str(event["path"])
-    print(event_path)
+
     # Check for query params, otherwise return 404 (Parameters not found)
     if not event["queryStringParameters"]:
         return {
