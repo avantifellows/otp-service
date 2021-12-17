@@ -1,11 +1,16 @@
-name: deploy to lambda
-on: [push]
+name: deploy to staging lambda
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
 jobs:
-  deploy_source:
+  deploy:
     name: build and deploy lambda
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -29,5 +34,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ap-south-1
-          function_name: otpAuthentication
+          function_name: otpService-staging
           zip_file: bundle.zip

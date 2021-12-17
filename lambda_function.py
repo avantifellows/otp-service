@@ -5,7 +5,7 @@ import os
 
 def lambda_handler(event, context):
     # Base URL of Gupshup's OTP API, including all constant params
-    base_URL = os.environ.get("OTP_API_BASE_URL")
+    base_URL = os.environ.get("API_BASE_URL")
 
     response_headers = {"Access-Control-Allow-Origin": "*"}
     event_path = str(event["path"])
