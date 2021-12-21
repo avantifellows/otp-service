@@ -35,8 +35,6 @@ Use the below endpoint to verify OTP code sent to a mobile number.
 
 Required query parameters: `phone`, `code`
 
-Optional query parameters: `msg`, `otpCodeLength`, `optCodeType`
-
 ### **Example**
 
 ```python
