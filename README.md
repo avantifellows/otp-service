@@ -1,6 +1,6 @@
 Avanti's OTP service uses [Gupshup's](https://www.gupshup.io/developer/home) OTP API for authentication.
 
-This authentication is the dynamic generation of a numeric/alphanumeric/alphabetical code that authenticates the user for a single transaction or session. The code or one-time password (OTP) can be sent to the user via SMS.
+This service dynamically generates a numeric/alphanumeric/alphabetical code that authenticates the user for a single transaction or session. The code or one-time password (OTP) can be sent to the user via SMS.
 
 The API is protected, hence you need to add an API key to the header of each call. (See examples below)
 
