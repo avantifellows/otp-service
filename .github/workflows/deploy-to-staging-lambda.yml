@@ -1,0 +1,33 @@
+name: Deploy to staging Lambda
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Build and Deploy to Lambda
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install dependencies and bundle into .zip file
+        run: |
+          python -m pip install --upgrade pip
+          # install all dependencies as defined by requirements.txt in the current directory
+          pip3 install -r requirements.txt -t .
+          # zip files into current directory
+          zip -r bundle.zip .
+
+      - name: Deploy .zip file on Lambda
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+          aws_region: ap-south-1
+          function_name: otpService-staging
+          zip_file: bundle.zip
